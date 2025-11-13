@@ -12,14 +12,29 @@
   main{max-width:900px;margin:18px auto}
   .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));padding:16px;border-radius:12px}
   label{display:block;margin-top:10px;font-size:13px;color:rgba(255,255,255,0.85)}
-  input, select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:inherit}
+  input, select, textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:inherit;font-family:inherit}
   .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
-  .actions{display:flex;gap:8px;margin-top:14px}
+  .actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
   .btn{padding:10px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
   .btn.back{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#e9fbf6}
   .btn.compute{background:linear-gradient(90deg,var(--accent),#ffb559);color:#05222b}
   .result{margin-top:14px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)}
-  @media(max-width:700px){.row{grid-template-columns:1fr}}
+  .small{font-size:13px;color:rgba(255,255,255,0.78)}
+  /* checkbox group */
+  .checkbox-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+  .checkbox-row label{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.02);padding:8px 10px;border-radius:8px;cursor:pointer}
+  /* modal */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px}
+  .modal{
+    width:100%;max-width:720px;background:linear-gradient(180deg,#072632,#0b3940);border-radius:12px;padding:18px;color:#f6fff9;box-shadow:0 20px 60px rgba(2,6,23,0.7);
+    max-height:90vh;overflow:auto;
+  }
+  .modal h3{margin:0 0 8px 0}
+  .modal .modal-body{line-height:1.5;color:rgba(246,255,249,0.95)}
+  .modal .modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
+  .pill{display:inline-block;padding:6px 10px;background:rgba(255,209,102,0.08);color:var(--accent);border-radius:999px;font-weight:700}
+  /* responsive */
+  @media(max-width:700px){.row{grid-template-columns:1fr} .actions{flex-direction:column} main{margin:12px auto;padding:0 6px}}
 </style>
 </head>
 <body>
@@ -32,100 +47,297 @@
   </div>
 
   <main>
-    <div class="card">
-      <h2 style="margin:0 0 8px 0">Dados para dimensionamento</h2>
-      <p style="margin:0 0 12px 0;color:rgba(255,255,255,0.75)">Preencha os dados básicos para uma sugestão inicial do tamanho do sistema.</p>
+    <div class="card" role="form" aria-labelledby="formTitle">
+      <h2 id="formTitle" style="margin:0 0 8px 0">Dados para dimensionamento</h2>
+      <p style="margin:0 0 12px 0;color:rgba(255,255,255,0.75)">Preencha as informações abaixo — as respostas irão gerar uma sugestão preliminar e indicar se a casa está apta.</p>
 
+      <!-- Consumpt -->
       <label for="consumo">Consumo médio mensal (kWh)</label>
       <input id="consumo" type="number" min="0" placeholder="Ex: 320" />
 
-      <label for="irrad">Irradiação média local (kWh/m²/dia)</label>
-      <select id="irrad">
-        <option value="5.5">Extrema (≈5.5 kWh/m²/dia)</option>
-        <option value="5.2">Muito Alta (≈5.2 kWh/m²/dia)</option>
-        <option value="5.0">Alta (≈5.0 kWh/m²/dia)</option>
-        <option value="4.8">Boa+ (≈4.8 kWh/m²/dia)</option>
-        <option value="4.5">Boa (≈4.5 kWh/m²/dia)</option>
-        <option value="4.2">Regular+ (≈4.2 kWh/m²/dia)</option>
-        <option value="4.0">Regular (≈4.0 kWh/m²/dia)</option>
-        <option value="3.8">Moderada (≈3.8 kWh/m²/dia)</option>
-        <option value="3.2">Baixa (≈3.2 kWh/m²/dia)</option>
-        <option value="2.8">Muito baixa (≈2.8 kWh/m²/dia)</option>
+      <!-- Voltagem -->
+      <label for="voltage">Tensão da residência</label>
+      <select id="voltage">
+        <option value="220">220V</option>
+        <option value="110">110V</option>
+        <option value="bifasico">Bifásico</option>
+        <option value="trifasico">Trifásico</option>
       </select>
+
+      <!-- Exposição ao sol -->
+      <label for="exposicao">A casa recebe boa quantidade de sol?</label>
+      <select id="exposicao">
+        <option value="alta">Sim — exposição alta (boa para painéis)</option>
+        <option value="media">Parcial — sol em parte do dia</option>
+        <option value="baixa">Não — bastante sombra</option>
+      </select>
+
+      <!-- eletrodomésticos -->
+      <label>Eletrodomésticos e carga alta (marque os que tiver)</label>
+      <div class="checkbox-row">
+        <label><input type="checkbox" id="ac" /> Mais de 1 ar-condicionado</label>
+        <label><input type="checkbox" id="fridge2" /> 2 ou mais geladeiras</label>
+        <label><input type="checkbox" id="máquina" /> Máquina de lavar intensa</label>
+        <label><input type="checkbox" id="outros" /> Outros equipamentos de alta carga</label>
+      </div>
+
+      <!-- conta de energia base -->
+      <label for="valorConta">Base de valor da conta de energia (R$) — última fatura (opcional)</label>
+      <input id="valorConta" type="number" min="0" step="0.01" placeholder="Ex: 320.50" />
+
+      <!-- consumo médio em kWh (duplicate) -->
+      <label for="kwhMedio">Quantos kWh são gastos em média na casa por mês? (se já informou consumo, deixe igual)</label>
+      <input id="kwhMedio" type="number" min="0" placeholder="Ex: 320" />
 
       <div class="row">
         <div>
-          <label for="eff">Rendimento do sistema (%)</label>
-          <input id="eff" type="number" min="50" max="95" value="75" />
+          <label for="tipoTelhado">Tipo de telhado</label>
+          <select id="tipoTelhado">
+            <option value="ceramico">Cerâmico</option>
+            <option value="metalico">Metálico</option>
+            <option value="laje">Laje</option>
+            <option value="fibrocimento">Fibrocimento</option>
+            <option value="outro">Outro</option>
+          </select>
         </div>
+
         <div>
-          <label for="panelW">Potência do módulo (Wp)</label>
-          <input id="panelW" type="number" min="100" max="600" value="400" />
+          <label for="possuiParede">Possui parede livre para instalação de painel de gerenciamento (inversor/monitor)?</label>
+          <select id="possuiParede">
+            <option value="sim">Sim</option>
+            <option value="nao">Não</option>
+            <option value="duvida">Possivelmente / verificar</option>
+          </select>
         </div>
       </div>
+
+      <div class="row">
+        <div>
+          <label for="sombreamento">Nível médio de sombreamento</label>
+          <select id="sombreamento">
+            <option value="0">Sem sombra</option>
+            <option value="5">Leve (≈5%)</option>
+            <option value="10">Moderado (≈10%)</option>
+            <option value="20">Alto (≈20%)</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="inclinacao">Inclinação do telhado (°) — se não souber, deixe 15</label>
+          <input id="inclinacao" type="number" min="0" max="90" value="15" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="orientacao">Orientação do telhado (onde pega mais sol)</label>
+          <select id="orientacao">
+            <option value="N">Norte</option>
+            <option value="NE">Nordeste</option>
+            <option value="NO">Noroeste</option>
+            <option value="L">Leste</option>
+            <option value="O">Oeste</option>
+            <option value="S">Sul</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="areaDisp">Área disponível aproximada para painéis (m²)</label>
+          <input id="areaDisp" type="number" min="0" placeholder="Ex: 20" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="ocupantes">Número de ocupantes na residência</label>
+          <input id="ocupantes" type="number" min="1" value="3" />
+        </div>
+        <div>
+          <label for="bateria">Interesse em sistema com bateria (backup)?</label>
+          <select id="bateria">
+            <option value="nao">Não</option>
+            <option value="sim">Sim — quero backup</option>
+            <option value="talvez">Talvez — estudar orçamento</option>
+          </select>
+        </div>
+      </div>
+
+      <label for="observacoes">Observações adicionais (ex: restrições, fotos disponíveis, praça de montagem)</label>
+      <textarea id="observacoes" rows="3" placeholder="Informações extras (opcional)"></textarea>
 
       <div class="actions">
         <button class="btn back" onclick="location.href='painelprincipal.html'">Voltar</button>
-        <button class="btn compute" onclick="compute()">Calcular sugestão</button>
+        <button class="btn compute" onclick="handleSubmit()">Gerar sugestão</button>
       </div>
 
       <div class="result" id="resultArea">
-        Preencha os campos e clique em <strong>Calcular sugestão</strong>.
+        Preencha os campos e clique em <strong>Gerar sugestão</strong>.
       </div>
     </div>
   </main>
 
+  <!-- Modal (Tipo A: estilizado) -->
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document" id="modalContent">
+      <h3><span class="pill">✔</span> Sua casa está apta a receber o painel</h3>
+      <div class="modal-body" id="modalBody">
+        <!-- Conteúdo populado dinamicamente -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn back" onclick="closeModal()">Fechar</button>
+        <button class="btn compute" id="copyBtn">Copiar resumo</button>
+      </div>
+    </div>
+  </div>
+
 <script>
-  function compute(){
-    const consumo = parseFloat(document.getElementById('consumo').value);
-    const irrad = parseFloat(document.getElementById('irrad').value);
-    const effPerc = parseFloat(document.getElementById('eff').value) / 100;
-    const panelWp = parseFloat(document.getElementById('panelW').value);
+  // Função utilitária para formatar reais
+  function formatBRL(v){ return 'R$ ' + Number(v).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
 
-    if (!consumo || consumo <= 0) {
-      alert('Informe um consumo mensal válido.');
-      return;
-    }
-    if (!irrad || irrad <= 0) {
-      alert('Informe irradiação.');
-      return;
-    }
-
+  // Calculadora simples baseada no consumo mensal (kWh)
+  function estimateFromConsumption(kwh, effPerc, irradValueFallback=4.0, panelWp=400){
+    // usamos um irrad padrão interno para cálculo (4 kWh/m²/dia) porque removemos irrad do formulário
+    const irrad = irradValueFallback;
     const kwhPerkWpMonth = irrad * 30 * 0.75;
     const adjusted = kwhPerkWpMonth * effPerc / 0.75;
-
-    const kwpNeeded = consumo / adjusted;
+    const kwpNeeded = kwh / adjusted;
     const kwpRounded = Math.max(0.1, Math.round(kwpNeeded * 100) / 100);
-
     const modules = Math.ceil((kwpRounded * 1000) / panelWp);
-
     const areaPerWp = 1/200;
     const estimatedArea = ((modules * panelWp) * areaPerWp).toFixed(1);
+    return { kwpRounded, modules, estimatedArea };
+  }
 
-    const result = `
-      <div style="font-size:16px;font-weight:800">${kwpRounded} kWp necessários</div>
-      <div class="small" style="margin-top:8px">Módulos sugeridos: <strong>${modules} x ${panelWp} Wp</strong></div>
-      <div class="small">Área aproximada: <strong>${estimatedArea} m²</strong></div>
+  function handleSubmit(){
+    // coleta dados
+    const consumo = parseFloat(document.getElementById('consumo').value) || 0;
+    const kwhMedio = parseFloat(document.getElementById('kwhMedio').value) || consumo;
+    const voltage = document.getElementById('voltage').value;
+    const exposicao = document.getElementById('exposicao').value;
+    const ac = document.getElementById('ac').checked;
+    const fridge2 = document.getElementById('fridge2').checked;
+    const maquina = document.getElementById('máquina').checked;
+    const outros = document.getElementById('outros').checked;
+    const valorConta = parseFloat(document.getElementById('valorConta').value) || 0;
+    const tipoTelhado = document.getElementById('tipoTelhado').value;
+    const possuiParede = document.getElementById('possuiParede').value;
+    const sombreamento = document.getElementById('sombreamento').value;
+    const inclinacao = parseFloat(document.getElementById('inclinacao').value) || 15;
+    const orientacao = document.getElementById('orientacao').value;
+    const areaDisp = parseFloat(document.getElementById('areaDisp').value) || 0;
+    const ocupantes = parseInt(document.getElementById('ocupantes').value) || 1;
+    const bateria = document.getElementById('bateria').value;
+    const observacoes = (document.getElementById('observacoes').value || '').trim();
 
-      <div style="margin-top:14px;line-height:1.45;font-size:13px;color:rgba(255,255,255,0.85)">
-        <strong>Aviso importante:</strong><br><br>
-        De acordo com as informações fornecidas, sua residência possui capacidade para suportar a instalação do sistema fotovoltaico sugerido.  
-        A quantidade de módulos, potência e área estimada indicam que a instalação é tecnicamente possível, considerando um telhado convencional residencial.<br><br>
+    const effPerc = (parseFloat(document.getElementById('eff').value) || 75) / 100;
+    const panelWp = parseFloat(document.getElementById('panelW').value) || 400;
 
-        Após a contratação, a empresa responsável terá o prazo máximo de <strong>30 dias corridos</strong> para realizar a instalação completa do sistema solar.  
+    // checagem mínima
+    if (!consumo && !kwhMedio){
+      alert('Informe o consumo médio mensal (kWh) ou a média em kWh para prosseguir.');
+      return;
+    }
 
-        Caso o prazo não seja cumprido, a empresa será <strong>penalizada</strong> e deverá pagar ao cliente uma multa correspondente ao:
-        <ul style="margin-top:6px">
-          <li><strong>valor total do painel solar contratado</strong>, ou</li>
-          <li><strong>valor total do financiamento</strong> (quando contratado via crédito)</li>
-        </ul>
-        — prevalecendo o maior valor entre eles.<br><br>
+    const consumoUsar = kwhMedio || consumo;
+    // estimativa
+    const est = estimateFromConsumption(consumoUsar, effPerc, 4.0, panelWp);
 
-        Essa regra garante segurança, cumprimento do prazo e proteção total ao consumidor.
+    // montar resumo para exibir no resultArea
+    const resumoHTML = `
+      <div style="font-size:16px;font-weight:800">${est.kwpRounded} kWp necessários</div>
+      <div class="small" style="margin-top:8px">Módulos sugeridos: <strong>${est.modules} x ${panelWp} Wp</strong></div>
+      <div class="small">Área aproximada: <strong>${est.estimatedArea} m²</strong></div>
+      <div style="margin-top:10px;font-size:13px;color:rgba(255,255,255,0.78)">
+        Resultado preliminar; para proposta final é necessária vistoria técnica in loco.
       </div>
     `;
-    document.getElementById('resultArea').innerHTML = result;
+    document.getElementById('resultArea').innerHTML = resumoHTML;
+
+    // Montar texto do modal (muito completo, a favor do cliente com algumas obrigações da empresa)
+    const obligations = `
+      <p><strong>Resumo da avaliação:</strong></p>
+      <p>Com base nas informações fornecidas, sua residência foi avaliada como <strong>apta</strong> para receber o sistema fotovoltaico estimado. A estimativa inicial é de <strong>${est.kwpRounded} kWp</strong>, com aproximadamente <strong>${est.modules} módulos de ${panelWp} Wp</strong>, ocupando cerca de <strong>${est.estimatedArea} m²</strong>.</p>
+
+      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.04);margin:10px 0"/>
+
+      <p><strong>Obrigações da Solarium (empresa):</strong></p>
+      <ul>
+        <li>Executar a instalação completa em até <strong>30 dias corridos</strong> a partir da data de autorização/assinatura e liberação técnica.</li>
+        <li>Fornecer todos os equipamentos novos, certificados e homologados, incluindo módulos, estruturas, inversor e cabeamento.</li>
+        <li>Garantir mão de obra qualificada — equipe técnica para instalação, com instrução e segurança.</li>
+        <li>Oferecer suporte técnico pós-instalação, incluindo substituição de peças defeituosas durante o período de garantia contratual.</li>
+        <li>Disponibilizar documentação técnica e relatórios de medição de geração após instalação.</li>
+        <li>Comunicar o cliente de forma clara sobre qualquer impedimento técnico, incluindo prazos adicionais justificados por autorização de concessionária ou documentação faltante do cliente.</li>
+      </ul>
+
+      <p><strong>Direitos do cliente e proteção:</strong></p>
+      <ul>
+        <li>Se a Solarium não concluir a instalação no prazo máximo de <strong>30 dias corridos</strong>, a empresa será obrigada a pagar ao cliente a <strong>quantia total do financiamento contratado</strong> ou o valor total do sistema contratado (prevalecendo o maior valor).</li>
+        <li>O pagamento deve ser efetuado integralmente ao cliente em até 10 dias úteis após notificação formal do não cumprimento do prazo.</li>
+        <li>O cliente tem direito a acompanhamento, vistoria final, e registro fotográfico do sistema instalado antes da aceitação final.</li>
+        <li>Em caso de descumprimento reiterado, o cliente pode buscar restituição, indenização e recorrer aos órgãos de defesa do consumidor (Procon/Câmaras de Mediação), conforme previsto no Código de Defesa do Consumidor.</li>
+      </ul>
+
+      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.04);margin:10px 0"/>
+
+      <p><strong>Dados informados pelo cliente (resumo):</strong></p>
+      <ul>
+        <li>Consumo médio (kWh): <strong>${consumoUsar}</strong></li>
+        <li>Tensão: <strong>${voltage}</strong></li>
+        <li>Exposição ao sol: <strong>${exposicao}</strong></li>
+        <li>Eletrodomésticos pesados: <strong>${ac ? 'Sim (muitos ar-condicionados)' : 'Não' }${fridge2 ? ', 2+ geladeiras' : ''}${maquina ? ', máquina intensa' : ''}${outros ? ', outros' : ''}</strong></li>
+        <li>Última fatura (R$): <strong>${valorConta ? formatBRL(valorConta) : 'não informada'}</strong></li>
+        <li>Tipo de telhado: <strong>${tipoTelhado}</strong></li>
+        <li>Parede para gerenciamento: <strong>${possuiParede}</strong></li>
+        <li>Sombreamento médio: <strong>${sombreamento}%</strong></li>
+        <li>Inclinação (°): <strong>${inclinacao}</strong></li>
+        <li>Orientação: <strong>${orientacao}</strong></li>
+        <li>Área disponível (m²): <strong>${areaDisp}</strong></li>
+        <li>Ocupantes: <strong>${ocupantes}</strong></li>
+        <li>Interesse em bateria: <strong>${bateria}</strong></li>
+        <li>Observações: <strong>${observacoes || '—'}</strong></li>
+      </ul>
+
+      <p style="margin-top:8px"><strong>Atenção:</strong> este é um diagnóstico preliminar. A proposta final depende de inspeção técnica detalhada que considere sombreamento, ancoragem estrutural, caminho de cabos, proteção elétrica e aprovação da concessionária quando necessário.</p>
+
+      <p style="margin-top:10px;font-size:13px;color:rgba(255,255,255,0.85)"><strong>Prazo e multa:</strong> Reforçamos que, se a Solarium não concluir a instalação no prazo máximo estipulado (30 dias corridos), a empresa será responsável pelo pagamento do valor total do financiamento contratado ao cliente, conforme cláusula contratual acordada.</p>
+    `;
+
+    // abrir modal
+    openModal(obligations);
   }
+
+  function openModal(htmlContent){
+    const backdrop = document.getElementById('modalBackdrop');
+    const body = document.getElementById('modalBody');
+    body.innerHTML = htmlContent;
+    backdrop.style.display = 'flex';
+    backdrop.setAttribute('aria-hidden','false');
+
+    // preparar botão de copia
+    const copyBtn = document.getElementById('copyBtn');
+    copyBtn.onclick = () => {
+      // extrai texto limpo do modal para copiar
+      const text = body.innerText || body.textContent;
+      navigator.clipboard.writeText(text).then(()=> {
+        copyBtn.textContent = 'Copiado';
+        setTimeout(()=> copyBtn.textContent = 'Copiar resumo', 1800);
+      }).catch(()=> {
+        alert('Não foi possível copiar automaticamente. Selecione e copie manualmente.');
+      });
+    };
+  }
+
+  function closeModal(){
+    const backdrop = document.getElementById('modalBackdrop');
+    backdrop.style.display = 'none';
+    backdrop.setAttribute('aria-hidden','true');
+  }
+
+  // fechar modal ao clicar fora do conteúdo
+  document.getElementById('modalBackdrop').addEventListener('click', function(e){
+    if(e.target === this) closeModal();
+  });
 </script>
 </body>
 </html>
