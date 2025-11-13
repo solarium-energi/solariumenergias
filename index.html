@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Solarium — Apresentação</title>
 
 <style>
@@ -11,125 +11,124 @@
     --bg2:#0b3b2e;
     --accent:#ffd166;
     --muted:rgba(255,255,255,0.85);
-    --glass: rgba(255,255,255,0.06);
   }
+
   html,body{
     height:100%;
     margin:0;
     font-family:Inter, sans-serif;
   }
   body{
-    background: linear-gradient(180deg,var(--bg1), var(--bg2));
+    background:linear-gradient(180deg, var(--bg1), var(--bg2));
     color:var(--muted);
     display:flex;
     align-items:center;
     justify-content:center;
-  }
-
-  .stage{
-    width:100%;
-    max-width:1100px;
-    min-height:90vh;
-    border-radius:18px;
     padding:20px;
-    position:relative;
-    display:grid;
-    grid-template-columns:1fr 460px;
-    gap:28px;
   }
 
-  /* LOGO */
+  .container{
+    text-align:center;
+    width:100%;
+    max-width:420px;
+  }
+
+  /* SOL REALISTA */
   .logo-wrap{
-    width:160px;
-    height:160px;
-    border-radius:32px;
     display:flex;
-    align-items:center;
     justify-content:center;
-    margin:0 auto;
+    margin-bottom:15px;
   }
 
   .sun{
-    width:120px;
-    height:120px;
-    opacity:1;
+    width:130px;
+    height:130px;
+    animation:float 3s ease-in-out infinite;
+  }
+
+  @keyframes float{
+    0%{ transform:translateY(0); }
+    50%{ transform:translateY(-6px); }
+    100%{ transform:translateY(0); }
   }
 
   h1{
-    margin:12px 0 0 0;
-    text-align:center;
-    font-size:28px;
+    font-size:26px;
+    margin:10px 0 5px 0;
   }
 
-  p.lead{
-    text-align:center;
-    margin:10px auto;
-    max-width:300px;
+  p{
+    font-size:15px;
+    line-height:1.45;
+    max-width:290px;
+    margin:0 auto 20px auto;
     color:rgba(255,255,255,0.78);
-    line-height:1.4;
   }
 
-  /* BOTÃO PRINCIPAL */
-  .btn-blue{
-    width:90%;
-    max-width:380px;
-    font-size:18px;
+  /* BOTÃO PEQUENO */
+  .btn-small{
+    padding:10px 22px;
     background:#1d8cff;
-    border:none;
-    padding:14px 0;
-    border-radius:12px;
     color:white;
-    font-weight:700;
-    display:block;
-    margin:20px auto 0 auto;
+    border:none;
+    border-radius:10px;
+    font-size:15px;
+    font-weight:600;
     cursor:pointer;
+    transition:0.2s;
   }
 
-  /* MOBILE FIX */
-  @media(max-width:940px){
-    .stage{
-      grid-template-columns:1fr;
-      padding:10px;
-      text-align:center;
-    }
-
-    .device,
-    .right-content,
-    footer.hint{
-      display:none !important; /* Remove lado direito e textos */
-    }
-
-    h1{ font-size:24px; }
+  .btn-small:hover{
+    opacity:0.9;
+    transform:scale(1.03);
   }
+
 </style>
 </head>
 
 <body>
 
-<div class="stage">
+<div class="container">
 
-    <!-- LOGO -->
-    <div class="logo-wrap">
-      <svg class="sun" viewBox="0 0 64 64">
-        <defs>
-          <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
-            <stop offset="0" stop-color="#ffd166"/>
-            <stop offset="1" stop-color="#ff8a00"/>
-          </linearGradient>
-        </defs>
-        <circle cx="32" cy="32" r="14" fill="url(#g)"></circle>
-      </svg>
-    </div>
+  <!-- Sol muito mais bonito -->
+  <div class="logo-wrap">
+    <svg class="sun" viewBox="0 0 120 120">
+      <defs>
+        <radialGradient id="sunCore" cx="50%" cy="50%" r="60%">
+          <stop offset="0%" stop-color="#ffe68a"/>
+          <stop offset="55%" stop-color="#ffd34d"/>
+          <stop offset="100%" stop-color="#ffad1f"/>
+        </radialGradient>
+      </defs>
 
-    <h1>Solarium</h1>
-    <p class="lead">
-      Soluções profissionais em geração solar — monitoramento, dimensionamento e gestão em um só painel.
-    </p>
+      <!-- Raios -->
+      <g stroke="#ffdd55" stroke-width="6" stroke-linecap="round">
+        <line x1="60" y1="5"  x2="60" y2="25"/>
+        <line x1="60" y1="95" x2="60" y2="115"/>
+        <line x1="5"  y1="60" x2="25" y2="60"/>
+        <line x1="95" y1="60" x2="115" y2="60"/>
 
-    <!-- BOTÃO AZUL -->
-    <button class="btn-blue" onclick="location.href='index1.html'">
-      Continuar
-    </button>
+        <line x1="22" y1="22" x2="36" y2="36"/>
+        <line x1="98" y1="98" x2="84" y2="84"/>
+
+        <line x1="22" y1="98" x2="36" y2="84"/>
+        <line x1="98" y1="22" x2="84" y2="36"/>
+      </g>
+
+      <!-- Núcleo do sol -->
+      <circle cx="60" cy="60" r="28" fill="url(#sunCore)" />
+    </svg>
+  </div>
+
+  <h1>Solarium</h1>
+
+  <p>
+    Soluções profissionais em geração solar — monitoramento, dimensionamento e gestão em um só painel, conheça a solarium a empresa que foi pensada para proporcionar uma melhora na qualidade de vida de todos os brasileiros.
+  </p>
+
+  <button class="btn-small" onclick="location.href='index1.html'">
+    Continuar
+  </button>
 
 </div>
 
