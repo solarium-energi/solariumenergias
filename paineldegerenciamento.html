@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Gerenciamento — Solarium</title>
+
+<style>
+  :root{
+    --bg:#041722;
+    --card:#072632;
+    --accent:#ffd166;
+  }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background:linear-gradient(180deg,var(--bg),#022f2b);
+    color:#e8fbf3;
+    font-family:Inter,system-ui,Arial;
+    padding:18px;
+  }
+
+  header{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+
+  .logo{
+    width:48px;
+    height:48px;
+    border-radius:10px;
+    background:linear-gradient(90deg,#ffd166,#ff9b2b);
+    display:grid;
+    place-items:center;
+    color:#05222b;
+  }
+
+  main{
+    max-width:980px;
+    margin:16px auto;
+  }
+
+  .card{
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));
+    padding:16px;
+    border-radius:12px;
+    box-shadow:0 14px 40px rgba(2,6,23,0.6);
+  }
+
+  h2{ margin:0 0 8px 0; }
+
+  .row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:12px;
+  }
+
+  .stat{
+    flex:1;
+    min-width:160px;
+    background:rgba(255,255,255,0.02);
+    padding:12px;
+    border-radius:10px;
+  }
+
+  .small{
+    font-size:13px;
+    color:rgba(255,255,255,0.75);
+  }
+
+  .btn{
+    padding:10px 12px;
+    border-radius:10px;
+    border:0;
+    cursor:pointer;
+    font-weight:700;
+  }
+
+  .btn.back{
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.06);
+    color:#e8fbf3;
+  }
+
+  .btn.primary{
+    background:linear-gradient(90deg,var(--accent),#ffb559);
+    color:#05222b;
+  }
+
+  .placeholder{
+    margin-top:20px;
+    height:220px;
+    border-radius:10px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.04));
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:rgba(255,255,255,0.45);
+    font-size:14px;
+  }
+
+  /* 🔥 ONDAS ENERGÉTICAS — EFEITO PROFISSIONAL */
+  .wave{
+    position:absolute;
+    left:0;
+    width:200%;
+    height:120px;
+    background:rgba(0,255,180,0.12);
+    border-radius:45%;
+    animation:waveMove 8s linear infinite;
+    bottom:-40px;
+  }
+
+  .wave:nth-child(2){
+    animation-duration:12s;
+    background:rgba(0,255,180,0.08);
+    height:140px;
+    bottom:-60px;
+  }
+
+  @keyframes waveMove {
+    0% { transform:translateX(0) rotate(0deg); }
+    100% { transform:translateX(-50%) rotate(0deg); }
+  }
+
+  footer{
+    margin-top:12px;
+    color:rgba(255,255,255,0.5);
+    font-size:13px;
+  }
+
+  /* Responsivo sem alterar layout */
+  @media(max-width:480px){
+    .row{ gap:6px; }
+    .stat{ min-width:100%; }
+  }
+</style>
+</head>
+
+<body>
+<header>
+  <div class="logo">☀️</div>
+  <div>
+    <div style="font-size:14px">Solarium</div>
+    <div style="font-size:12px;color:rgba(255,255,255,0.6)">Gerenciamento de energia</div>
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <h2>Visão Geral</h2>
+        <div class="small" id="userInfo">Carregando usuário...</div>
+      </div>
+
+      <div style="display:flex;gap:8px">
+        <button class="btn back" onclick="location.href='painelprincipal.html'">Voltar</button>
+        <button class="btn primary" onclick="simulate()">Atualizar</button>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:14px">
+      <div class="stat">
+        <div class="small">Energia gerada (hoje)</div>
+        <div style="font-size:22px;font-weight:800" id="energyToday">0.00 kWh</div>
+      </div>
+
+      <div class="stat">
+        <div class="small">Energia gerada (mês)</div>
+        <div style="font-size:22px;font-weight:800" id="energyMonth">0.00 kWh</div>
+      </div>
+
+      <div class="stat">
+        <div class="small">Economia estimada</div>
+        <div style="font-size:22px;font-weight:800" id="savings">R$ 0.00</div>
+      </div>
+    </div>
+
+    <div class="placeholder" id="chartArea">
+        [Geração aguardando atualização]
+        <!-- 🔥 Ondas animadas -->
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
+
+    <footer>
+      Os dados exibidos aqui são simulados. A integração real exige conexão com APIs do inversor.
+    </footer>
+  </div>
+</main>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const raw = localStorage.getItem('solarium_user');
+    const userInfo = document.getElementById('userInfo');
+
+    if (raw) {
+      try {
+        const u = JSON.parse(raw);
+        userInfo.textContent = (u.name || 'Usuário') + (u.phone ? ' • ' + u.phone : '');
+      } catch {
+        userInfo.textContent = 'Usuário';
+      }
+    } else {
+      userInfo.innerHTML = 'Nenhum cadastro encontrado — <a href="index1.html" style="color:inherit;text-decoration:underline">Cadastrar</a>';
+    }
+  });
+
+  function rand(min,max){ return Math.random()*(max-min)+min; }
+
+  function simulate(){
+    const eToday = rand(2,15).toFixed(2);
+    const eMonth = rand(40,320).toFixed(2);
+    const price = 0.87;
+    const savings = (eMonth * price).toFixed(2);
+
+    document.getElementById('energyToday').innerText = `${eToday} kWh`;
+    document.getElementById('energyMonth').innerText = `${eMonth} kWh`;
+    document.getElementById('savings').innerText = `R$ ${savings}`;
+
+    document.getElementById('chartArea').innerText =
+      `Geração simulada: hoje ${eToday} kWh`;
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Cadastro — Solarium</title>
+<style>
+  :root{--bg:#07132a; --card:#081928; --accent:#ffd166; --muted:#e9f6f4}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:linear-gradient(180deg,var(--bg),#04252a);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:var(--muted);display:flex;align-items:center;justify-content:center;padding:20px}
+  .card{width:100%;max-width:520px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));border-radius:14px;padding:22px;box-shadow:0 14px 40px rgba(2,6,23,0.7)}
+  h2{margin:0 0 8px 0}
+  p{margin:0 0 18px 0;color:rgba(255,255,255,0.75)}
+  label{display:block;font-size:13px;margin:10px 0 6px 0;color:rgba(255,255,255,0.8)}
+  input{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--muted);font-size:15px;outline:none}
+  .row{display:flex;gap:10px;margin-top:14px}
+  .btn{flex:1;padding:12px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
+  .save{background:linear-gradient(90deg,var(--accent),#ffb559);color:#05222b}
+  .back{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+  .note{font-size:13px;color:rgba(255,255,255,0.6);margin-top:12px}
+  .success{margin-top:12px;padding:10px;background:rgba(34,197,94,0.09);border-radius:8px;color:#b7ffd8;display:none}
+</style>
+</head>
+<body>
+  <main class="card" role="main">
+    <h2>Cadastro</h2>
+    <p>Informe seu nome e telefone para começar a usar o painel Solarium. Os dados serão salvos localmente no seu dispositivo.</p>
+
+    <label for="name">Nome completo</label>
+    <input id="name" placeholder="Ex: João Silva" autocomplete="name" />
+
+    <label for="phone">Telefone</label>
+    <input id="phone" placeholder="+55 (11) 9 9999-9999" inputmode="tel" pattern="[0-9+\-\s()]*" />
+
+    <div class="row">
+      <button class="btn back" onclick="location.href='index.html'">Voltar</button>
+      <button class="btn save" id="saveBtn">Salvar</button>
+    </div>
+
+    <div class="note">Os dados ficam salvos no navegador do seu celular — para verificação, abra o painel.</div>
+    <div class="success" id="successBox">Cadastro salvo com sucesso! Redirecionando ao painel...</div>
+  </main>
+
+<script>
+  // referência aos elementos
+  const nameInput = document.getElementById('name');
+  const phoneInput = document.getElementById('phone');
+  const saveBtn = document.getElementById('saveBtn');
+  const successBox = document.getElementById('successBox');
+
+  // preenche se já existe cadastro
+  document.addEventListener('DOMContentLoaded', () => {
+    const saved = localStorage.getItem('solarium_user');
+    if (saved) {
+      try {
+        const obj = JSON.parse(saved);
+        if (obj.name) nameInput.value = obj.name;
+        if (obj.phone) phoneInput.value = obj.phone;
+      } catch(e){}
+    }
+  });
+
+  saveBtn.addEventListener('click', () => {
+    const name = nameInput.value.trim();
+    const phone = phoneInput.value.trim();
+    if (!name || !phone) {
+      alert('Por favor preencha nome e telefone.');
+      return;
+    }
+    const payload = { name, phone, savedAt: new Date().toISOString() };
+    localStorage.setItem('solarium_user', JSON.stringify(payload));
+    successBox.style.display = 'block';
+    // redireciona para painel principal (depois de breve tempo)
+    setTimeout(()=> location.href = 'painelprincipal.html', 900);
+  });
+</script>
+</body>
+</html>

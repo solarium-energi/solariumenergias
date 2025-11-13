@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Dimensionar Painel — Solarium</title>
+<style>
+  :root{--bg:#061f22;--card:#072632;--accent:#ffd166}
+  body{margin:0;min-height:100vh;background:linear-gradient(180deg,var(--bg),#0a3a36);font-family:Inter,system-ui,Arial;color:#e9fbf6;padding:18px}
+  .top{display:flex;align-items:center;gap:12px}
+  .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(90deg,#ffd166,#ff9b2b);display:grid;place-items:center}
+  main{max-width:900px;margin:18px auto}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));padding:16px;border-radius:12px}
+  label{display:block;margin-top:10px;font-size:13px;color:rgba(255,255,255,0.85)}
+  input, select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:inherit}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  .actions{display:flex;gap:8px;margin-top:14px}
+  .btn{padding:10px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+  .btn.back{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#e9fbf6}
+  .btn.compute{background:linear-gradient(90deg,var(--accent),#ffb559);color:#05222b}
+  .result{margin-top:14px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)}
+  @media(max-width:700px){.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+  <div class="top">
+    <div class="logo">☀️</div>
+    <div>
+      <div style="font-size:14px">Solarium</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.6)">Dimensionamento</div>
+    </div>
+  </div>
+
+  <main>
+    <div class="card">
+      <h2 style="margin:0 0 8px 0">Dados para dimensionamento</h2>
+      <p style="margin:0 0 12px 0;color:rgba(255,255,255,0.75)">Preencha os dados básicos para uma sugestão inicial do tamanho do sistema.</p>
+
+      <label for="consumo">Consumo médio mensal (kWh)</label>
+      <input id="consumo" type="number" min="0" placeholder="Ex: 320" />
+
+      <label for="irrad">Irradiação média local (kWh/m²/dia)</label>
+      <select id="irrad">
+        <option value="5.5">Extrema (≈5.5 kWh/m²/dia)</option>
+        <option value="5.2">Muito Alta (≈5.2 kWh/m²/dia)</option>
+        <option value="5.0">Alta (≈5.0 kWh/m²/dia)</option>
+        <option value="4.8">Boa+ (≈4.8 kWh/m²/dia)</option>
+        <option value="4.5">Boa (≈4.5 kWh/m²/dia)</option>
+        <option value="4.2">Regular+ (≈4.2 kWh/m²/dia)</option>
+        <option value="4.0">Regular (≈4.0 kWh/m²/dia)</option>
+        <option value="3.8">Moderada (≈3.8 kWh/m²/dia)</option>
+        <option value="3.2">Baixa (≈3.2 kWh/m²/dia)</option>
+        <option value="2.8">Muito baixa (≈2.8 kWh/m²/dia)</option>
+      </select>
+
+      <div class="row">
+        <div>
+          <label for="eff">Rendimento do sistema (%)</label>
+          <input id="eff" type="number" min="50" max="95" value="75" />
+        </div>
+        <div>
+          <label for="panelW">Potência do módulo (Wp)</label>
+          <input id="panelW" type="number" min="100" max="600" value="400" />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn back" onclick="location.href='painelprincipal.html'">Voltar</button>
+        <button class="btn compute" onclick="compute()">Calcular sugestão</button>
+      </div>
+
+      <div class="result" id="resultArea">
+        Preencha os campos e clique em <strong>Calcular sugestão</strong>.
+      </div>
+    </div>
+  </main>
+
+<script>
+  function compute(){
+    const consumo = parseFloat(document.getElementById('consumo').value);
+    const irrad = parseFloat(document.getElementById('irrad').value);
+    const effPerc = parseFloat(document.getElementById('eff').value) / 100;
+    const panelWp = parseFloat(document.getElementById('panelW').value);
+
+    if (!consumo || consumo <= 0) {
+      alert('Informe um consumo mensal válido.');
+      return;
+    }
+    if (!irrad || irrad <= 0) {
+      alert('Informe irradiação.');
+      return;
+    }
+
+    const kwhPerkWpMonth = irrad * 30 * 0.75;
+    const adjusted = kwhPerkWpMonth * effPerc / 0.75;
+
+    const kwpNeeded = consumo / adjusted;
+    const kwpRounded = Math.max(0.1, Math.round(kwpNeeded * 100) / 100);
+
+    const modules = Math.ceil((kwpRounded * 1000) / panelWp);
+
+    const areaPerWp = 1/200;
+    const estimatedArea = ((modules * panelWp) * areaPerWp).toFixed(1);
+
+    const result = `
+      <div style="font-size:16px;font-weight:800">${kwpRounded} kWp necessários</div>
+      <div class="small" style="margin-top:8px">Módulos sugeridos: <strong>${modules} x ${panelWp} Wp</strong></div>
+      <div class="small">Área aproximada: <strong>${estimatedArea} m²</strong></div>
+
+      <div style="margin-top:14px;line-height:1.45;font-size:13px;color:rgba(255,255,255,0.85)">
+        <strong>Aviso importante:</strong><br><br>
+        De acordo com as informações fornecidas, sua residência possui capacidade para suportar a instalação do sistema fotovoltaico sugerido.  
+        A quantidade de módulos, potência e área estimada indicam que a instalação é tecnicamente possível, considerando um telhado convencional residencial.<br><br>
+
+        Após a contratação, a empresa responsável terá o prazo máximo de <strong>30 dias corridos</strong> para realizar a instalação completa do sistema solar.  
+
+        Caso o prazo não seja cumprido, a empresa será <strong>penalizada</strong> e deverá pagar ao cliente uma multa correspondente ao:
+        <ul style="margin-top:6px">
+          <li><strong>valor total do painel solar contratado</strong>, ou</li>
+          <li><strong>valor total do financiamento</strong> (quando contratado via crédito)</li>
+        </ul>
+        — prevalecendo o maior valor entre eles.<br><br>
+
+        Essa regra garante segurança, cumprimento do prazo e proteção total ao consumidor.
+      </div>
+    `;
+    document.getElementById('resultArea').innerHTML = result;
+  }
+</script>
+</body>
+</html>

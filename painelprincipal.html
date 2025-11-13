@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Painel Principal — Solarium</title>
+<style>
+  :root{--bg:#041927;--card:#072632;--accent:#ffd166}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:linear-gradient(180deg,var(--bg),#022f2b);font-family:Inter,system-ui,Roboto,Arial;color:#e7fbf4}
+  header{padding:18px; display:flex;align-items:center;gap:14px}
+  .logo {
+    width:60px;height:60px;border-radius:12px;background:linear-gradient(180deg,#ffd166,#ff9b2b);display:grid;place-items:center;font-weight:800;color:#05222b;font-size:20px;box-shadow:0 8px 20px rgba(0,0,0,0.45)
+  }
+  .container{padding:18px;max-width:920px;margin:0 auto}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));padding:18px;border-radius:12px;box-shadow:0 14px 40px rgba(2,6,23,0.6)}
+  .greet{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .greet h2{margin:0}
+  .grid{margin-top:18px;display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .tile{padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));cursor:pointer;border:1px solid rgba(255,255,255,0.03);transition:transform .16s ease, box-shadow .16s}
+  .tile:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(2,6,23,0.6)}
+  .tile h3{margin:0 0 8px 0}
+  .small{font-size:13px;color:rgba(255,255,255,0.74)}
+  .actions{display:flex;gap:10px;margin-top:14px}
+  .btn{padding:10px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+  .btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#e7fbf4}
+  .btn.primary{background:linear-gradient(90deg,var(--accent),#ffb559);color:#05222b}
+  footer{margin-top:18px;color:rgba(255,255,255,0.5);font-size:13px}
+  @media(max-width:700px){.grid{grid-template-columns:1fr}}
+
+  /* --------------- MOBILE ONLY (ADICIONADO) --------------- */
+  @media(max-width:520px){
+    header{
+      padding:14px;
+      gap:10px;
+    }
+    .logo{
+      width:52px;
+      height:52px;
+      font-size:18px;
+    }
+    .greet{
+      flex-direction:column;
+      align-items:flex-start;
+      gap:10px;
+    }
+    .actions{
+      flex-direction:column;
+      gap:12px;
+    }
+    .btn{
+      width:100%;
+      text-align:center;
+    }
+  }
+
+  @media(max-width:420px){
+    body{font-size:15px}
+    .tile{padding:16px}
+    .container{padding:14px}
+    header{padding:12px}
+  }
+
+  @media(max-width:360px){
+    .logo{
+      width:46px;
+      height:46px;
+      font-size:16px;
+    }
+    .tile h3{font-size:17px}
+  }
+  /* --------------------------------------------------------- */
+</style>
+</head>
+<body>
+  <header>
+    <div class="logo" aria-hidden="true">☀️</div>
+    <div>
+      <div style="font-size:13px;opacity:.9">Solarium</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.6)">Painel de controle</div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      <div class="greet">
+        <div>
+          <h2 id="welcome">Bem-vindo</h2>
+          <div class="small" id="userPhone">Nenhum cadastro detectado — <a href="index1.html" style="color:inherit; text-decoration:underline;">Cadastrar</a></div>
+        </div>
+        <div>
+          <button class="btn secondary" onclick="location.href='index.html'">Voltar à apresentação</button>
+          <button class="btn primary" id="editBtn">Editar cadastro</button>
+        </div>
+      </div>
+
+      <div class="grid" aria-label="Opções principais">
+        <div class="tile" onclick="location.href='paineldegerenciamento.html'">
+          <h3>Gerenciamento de energia</h3>
+          <div class="small">Acompanhe energia gerada, histórico e economia estimada.</div>
+        </div>
+        <div class="tile" onclick="location.href='preenchimento.html'">
+          <h3>Dimensionar painel</h3>
+          <div class="small">Preencha dados do local e consumo para sugerir painel e tamanho.</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn secondary" onclick="localStorage.removeItem('solarium_user'); location.reload();">Limpar cadastro</button>
+        <div style="flex:1"></div>
+      </div>
+
+      <footer>Dados locais salvos no dispositivo. Para suporte técnico peça ajuda ao instalador autorizado.</footer>
+    </div>
+  </main>
+
+<script>
+  // Mostra nome e telefone se existir no localStorage
+  function loadUser(){
+    const elName = document.getElementById('welcome');
+    const elPhone = document.getElementById('userPhone');
+    const editBtn = document.getElementById('editBtn');
+    const raw = localStorage.getItem('solarium_user');
+    if (raw) {
+      try {
+        const user = JSON.parse(raw);
+        elName.innerText = user.name ? `Olá, ${user.name.split(' ')[0]} 👋` : 'Bem-vindo';
+        elPhone.innerHTML = user.phone ? `Telefone: <strong>${user.phone}</strong>` : 'Telefone não informado';
+        editBtn.onclick = () => location.href = 'index1.html';
+      } catch(e){
+        elName.innerText = 'Bem-vindo';
+      }
+    } else {
+      elName.innerText = 'Bem-vindo';
+      elPhone.innerHTML = 'Nenhum cadastro detectado — <a href="index1.html" style="color:inherit;text-decoration:underline;">Cadastrar</a>';
+      editBtn.onclick = () => location.href = 'index1.html';
+    }
+  }
+  document.addEventListener('DOMContentLoaded', loadUser);
+</script>
+</body>
+</html>

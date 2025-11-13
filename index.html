@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Solarium — Apresentação</title>
+<style>
+  :root{
+    --bg1:#07132a;
+    --bg2:#0b3b2e;
+    --accent:#ffd166;
+    --muted:rgba(255,255,255,0.85);
+    --glass: rgba(255,255,255,0.06);
+  }
+  html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+  body{
+    background: radial-gradient(1200px 600px at 10% 20%, rgba(255,193,7,0.06), transparent),
+                linear-gradient(180deg,var(--bg1), var(--bg2));
+    color:var(--muted);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+
+  .stage{
+    width:100%;
+    max-width:1100px;
+    height:78vh;
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:18px;
+    box-shadow:0 10px 40px rgba(2,6,23,0.7);
+    display:grid;
+    grid-template-columns:1fr 460px;
+    gap:28px;
+    padding:28px;
+    align-items:center;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .bg-layer{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    mix-blend-mode:screen;
+  }
+  .blob{
+    position:absolute;
+    filter:blur(60px);
+    opacity:0.55;
+    border-radius:50%;
+    animation:drift 12s ease-in-out infinite;
+  }
+  .blob.a{width:520px;height:520px;background:linear-gradient(135deg,#0ea5a7,#7c3aed); left:-8%; top:-10%; animation-duration:18s;}
+  .blob.b{width:360px;height:360px;background:linear-gradient(135deg,#ffd166,#ff8a00); right:-6%; bottom:-18%; animation-duration:14s; animation-delay:2s;}
+
+  @keyframes drift{
+    0%{transform:translate(0,0) scale(1)}
+    50%{transform:translate(12px,-20px) scale(1.04)}
+    100%{transform:translate(0,0) scale(1)}
+  }
+
+  .hero{
+    padding:36px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    z-index:2;
+  }
+
+  .logo-wrap{
+    width:160px;
+    height:160px;
+    display:grid;
+    place-items:center;
+    border-radius:32px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+    box-shadow:0 8px 30px rgba(2,6,23,0.6);
+    position:relative;
+  }
+
+  .sun{
+    width:110px;
+    height:110px;
+    transform:translateY(60px) scale(0.6);
+    opacity:0;
+    animation:popin 900ms cubic-bezier(.2,.95,.2,1) 600ms forwards;
+    filter:drop-shadow(0 8px 16px rgba(0,0,0,0.45));
+  }
+
+  @keyframes popin{
+    to{transform:translateY(0) scale(1); opacity:1;}
+  }
+
+  h1{
+    margin:0;
+    font-size:clamp(20px,3.2vw,34px);
+    letter-spacing:-0.4px;
+  }
+  p.lead{
+    margin:6px 0 0 0;
+    color:rgba(255,255,255,0.78);
+    max-width:42ch;
+    line-height:1.5;
+  }
+
+  .device{
+    height:100%;
+    border-radius:16px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));
+    padding:18px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    position:relative;
+    overflow:hidden;
+  }
+
+  /* Novo conteúdo do lado direito */
+  .right-content{
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    opacity:0;
+    transform:translateY(40px);
+    animation:appear 0.9s ease 0.7s forwards;
+  }
+  .right-content svg{
+    width:110px;
+    height:110px;
+    margin-bottom:14px;
+  }
+  .right-content p{
+    font-size:15px;
+    max-width:260px;
+    color:rgba(255,255,255,0.78);
+  }
+
+  @keyframes appear{
+    to{opacity:1; transform:translateY(0);}
+  }
+
+  .cta-row{margin-top:18px; display:flex; gap:12px;}
+  .btn{
+    background:linear-gradient(90deg,var(--accent), #ffb559);
+    color:#05222b;
+    padding:12px 18px;
+    border-radius:12px;
+    font-weight:600;
+    border:0;
+    cursor:pointer;
+    transition:transform .18s ease;
+  }
+  .btn.secondary{
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.06);
+    color:var(--muted);
+  }
+  .btn:active{transform:translateY(2px);}
+
+  footer.hint{
+    position:absolute;
+    left:20px;
+    bottom:16px;
+    font-size:13px;
+    color:rgba(255,255,255,0.45);
+  }
+
+  /* Responsivo */
+  @media(max-width:940px){
+    .stage{grid-template-columns:1fr; padding:18px; height:86vh;}
+    .device{height:40vh; order:-1;}
+  }
+</style>
+</head>
+
+<body>
+  <div class="stage">
+    <div class="bg-layer">
+      <div class="blob a"></div>
+      <div class="blob b"></div>
+    </div>
+
+    <div class="hero">
+      <div class="logo-wrap">
+        <svg class="sun" viewBox="0 0 64 64">
+          <defs>
+            <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0" stop-color="#ffd166"/>
+              <stop offset="1" stop-color="#ff8a00"/>
+            </linearGradient>
+          </defs>
+          <g transform="translate(2,2) scale(0.9)">
+            <circle cx="30" cy="30" r="10" fill="url(#g)"/>
+            <g stroke="url(#g)" stroke-width="2.6" stroke-linecap="round">
+              <line x1="30" y1="4" x2="30" y2="0"/>
+              <line x1="30" y1="60" x2="30" y2="56"/>
+              <line x1="4" y1="30" x2="0" y2="30"/>
+              <line x1="60" y1="30" x2="56" y2="30"/>
+              <line x1="10" y1="10" x2="7" y2="7"/>
+              <line x1="50" y1="50" x2="53" y2="53"/>
+              <line x1="50" y1="10" x2="53" y2="7"/>
+              <line x1="10" y1="50" x2="7" y2="53"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+
+      <h1>Solarium</h1>
+      <p class="lead">Soluções profissionais em geração solar — monitoramento, dimensionamento e gestão em um só painel.</p>
+
+      <div class="cta-row">
+        <button class="btn" onclick="location.href='index1.html'">Cadastrar</button>
+        <button class="btn secondary" onclick="openPanel()">Abrir painel</button>
+      </div>
+    </div>
+
+    <div class="device">
+      <div class="right-content">
+        <svg viewBox="0 0 64 64">
+          <circle cx="32" cy="32" r="14" fill="#ffd166"></circle>
+          <g stroke="#ffd166" stroke-width="3" stroke-linecap="round">
+            <line x1="32" y1="4" x2="32" y2="0"/>
+            <line x1="32" y1="64" x2="32" y2="60"/>
+            <line x1="4" y1="32" x2="0" y2="32"/>
+            <line x1="64" y1="32" x2="60" y2="32"/>
+            <line x1="10" y1="10" x2="6" y2="6"/>
+            <line x1="54" y1="54" x2="58" y2="58"/>
+            <line x1="54" y1="10" x2="58" y2="6"/>
+            <line x1="10" y1="54" x2="6" y2="58"/>
+          </g>
+        </svg>
+
+        <p>Solarium — gerando energia para milhares de brasileiros.</p>
+      </div>
+    </div>
+
+    <footer class="hint">Feito para dispositivos móveis e desktop.</footer>
+  </div>
+
+<script>
+function openPanel(){
+  const user = localStorage.getItem("solarium_user");
+  if(!user){
+    alert("⚠️ Você precisa realizar o cadastro antes de acessar o painel.");
+    return;
+  }
+  location.href = "painelprincipal.html";
+}
+</script>
+
+</body>
+</html>
